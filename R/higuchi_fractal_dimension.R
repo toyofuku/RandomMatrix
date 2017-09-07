@@ -1,16 +1,8 @@
 
-
 N <- 10000
 
-testDataGen <- function(pd) {
-  switch(pd,
-        "rnorm" = x <- rnorm(N),
-        "runif" = x <- runif(N),
-        "rcouchy" = x <- rcauchy(N)
-        )
-
-  # hist(x,100)
-  
+testDataGen <- function(fn) {
+  x <- fn(N)
   for(i in 2:N) { x[i] = x[i-1] + x[i] }
   return(x)
 }
@@ -44,17 +36,17 @@ higuchi <- function(x){
 
 # z2 <- read_delim("~/github/RandomMatrix/unifseq.csv", "\t", escape_double=FALSE, trim_ws=TRUE)
 
-pds <- c("rnorm","runif","rcouchy")
+randfn <- c(rnorm, runif, rcauchy)
 
 par(mfrow=c(4,2))
 for(i in 1:3){
-  x <- testDataGen(pds[i])
+  x <- testDataGen(randfn[[i]])
   ts.plot(x)
   spec.pgram(x)
 }
 
 for(i in 1:3){
-  x <- testDataGen(pds[i])
+  x <- testDataGen(randfn[[i]])
   result <- higuchi(x)
   (paramp <- lsfit(result[,1],result[,2])$coefficients )
   (corp <- cor(result[,1],result[,2]))
